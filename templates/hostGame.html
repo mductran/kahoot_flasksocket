@@ -1,8 +1,8 @@
 <body>
     <div id="quiz">
         <h3 id="question-num">Question 1</h3>
-        <h3 id="answered-player-num">Players answered: </h3>
-        <h3 id="timer">Timer: <span id="time-left">10</span></h3>
+        <!-- <h3 id="answered-player-num">Players answered: </h3> -->
+        <h3 id="timer">Timer: <span id="time-left">5</span></h3>
 
         <div id="result">
             <div class="square" id="square1" style="background-color: lightcoral"></div>
@@ -74,7 +74,7 @@
 <script>
     const socket = io()
     var timer
-    var remaining_time = 10
+    var remaining_time = 5
 
     pathname = window.location.pathname.split("/")
     console.log(pathname[3])
@@ -96,10 +96,12 @@
     })
 
     socket.on("game-questions", (data) => {
+        console.log("on event next game question")
         gameQuestions(data)
     })
 
     socket.on("get-time", (data) => {
+        console.log("getting time")
         socket.emit("time-score", {
             'player': data,
             'time': remaining_time
@@ -115,7 +117,7 @@
     })
 
     socket.on("update-answered-players", (data) => {
-        updateAnsweredPlayers(data)
+        // updateAnsweredPlayers(data)
     })
 
 </script>

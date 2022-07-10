@@ -1,5 +1,5 @@
 function updateTimer() {
-  remaining_time = 10
+  remaining_time = 5
   timer = setInterval(() => {
     remaining_time = remaining_time - 1
     document.getElementById("time-left").textContent = remaining_time
@@ -13,6 +13,12 @@ function updateTimer() {
 
 function nextQuestion() {
   document.getElementById("next-question").style.display = "none"
+
+  // document.getElementById('square1').style.display = "none";
+  // document.getElementById('square2').style.display = "none";
+  // document.getElementById('square3').style.display = "none";
+  // document.getElementById('square4').style.display = "none";
+
   document.getElementById('answer-1').style.filter = "none"
   document.getElementById('answer-2').style.filter = "none"
   document.getElementById('answer-3').style.filter = "none"
@@ -20,16 +26,16 @@ function nextQuestion() {
 
   document.getElementById('answered-player-num').style.display = "block"
   document.getElementById('timer').style.display = "block"
-  document.getElementById('time-left').innerHTML = "10"
+  document.getElementById('time-left').innerHTML = "5"
   socket.emit('next-question', {"id": pathname[3]}) //Tell server to start new question
 }
 
-function updateAnsweredPlayers(data) {
-  player_in_game = data.player_in_game
-  answered_players = data.answered_players
+// function updateAnsweredPlayers(data) {
+//   players_in_game = data.players_in_game
+//   answered_players = data.answered_players
 
-  document.getElementById("answered-player-num").innerHTML = "Players answered: " + answered_players + " / " + player_in_game
-}
+//   document.getElementById("answered-player-num").innerHTML = "Players answered: " + answered_players + " / " + players_in_game
+// }
 
 function gameOver(data) {
   document.getElementById("quiz").style.display = "none"
@@ -100,7 +106,7 @@ function questionOver(data) {
 
 function gameQuestions(data) {
 
-  console.log(data)
+  console.log("next question data", data)
 
   document.getElementById("question-text").innerHTML = "Question: " + data.question
   document.getElementById("answer-1").innerHTML = data["answers"][0]

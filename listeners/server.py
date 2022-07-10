@@ -158,6 +158,8 @@ def player_answer(data):
             current_question = room['game_data']['current_question']
             # game_id = room['game_data']['game_id']
 
+            print("checking current question ", current_question)
+
             correct_answer = room['questions'][current_question]['correct']
 
             if correct_answer == choice:
@@ -187,6 +189,8 @@ def player_answer(data):
                     "players_in_game": num_players_in_room,
                     "answered_players": room['game_data']['answered_players']
                 }, to=room['pin'])
+    else:
+        print("player asnwer room not found")
 
 
 @socketio.on("get-score")
@@ -222,7 +226,7 @@ def question_time_up(data):
 
         correct_answer = room['questions'][current_question]['correct']
 
-        # print("[debug] correct answer: ", correct_answer)
+        print("[debug] correct answer: ", correct_answer)
 
         socketio.emit("question-over", {
             "players": list(players_in_room),
@@ -248,7 +252,12 @@ def next_question(data):
         if (current_question_num < len(room['questions'])):
             question = room['questions'][current_question_num]
             question['players_in_game'] = num_players_in_room.matched_count
-            socketio.emit("game-question", question)
+
+            room_collection.update_one({"pin": int(room['pin'])}, {"$inc": {"game_data.current_question": 1}, "$set": {"game_data.live_question": True}})
+
+            print("next question: ", question)
+
+            socketio.emit("game-questions", question)
         else:
             # no more question available, game is over, rank players
             print("no more question")
