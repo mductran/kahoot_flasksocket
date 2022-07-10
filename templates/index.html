@@ -1,0 +1,31 @@
+<div>
+    <h2>
+        Join game
+    </h2>
+</div>
+
+<div>
+    <form action="/playerLobby">
+        <input type="text" name="username" id="username" autocomplete="off" placeholder="username">
+        <input type="text" pattern="[0-9]{6}" id="room-pin" autocomplete="off" placeholder="room id">
+        <input type="button" name="join-room" onclick="joinRoom()" value="Join">
+    </form>
+</div>
+
+<br />
+
+<div>
+    <h2>
+        <a href="/create">Create game</a>
+    </h2>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+    integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+    crossorigin="anonymous"></script>
+
+<script src="{{ url_for('static', filename='index.js') }}"></script>
+
+<script>
+    const socket = io()
+</script>

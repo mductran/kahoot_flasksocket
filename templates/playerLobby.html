@@ -1,0 +1,37 @@
+<h1>
+    Joining room
+</h1>
+
+<p>
+    Waiting for game to start
+</p>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+    integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+    crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script src="{{ url_for('static', filename='playerLobby.js') }}"></script>
+
+<script>
+    const socket = io()
+
+    socket.on("connect", () => {
+
+        console.log(socket.id)
+
+        pathname = window.location.pathname.split("/")
+        username = pathname[2]
+        pin = pathname[3]
+        socket.emit("player-join", {'name': username, 'pin': pin})
+    })
+    
+    // socket.on("host-disconnect", () => {
+    //     window.location.href = "/"
+    // })
+
+    socket.on("game-started-player", () => {
+        window.location.href = "/player/game/" + socket.id
+    })
+</script>

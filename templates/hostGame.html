@@ -1,0 +1,121 @@
+<body>
+    <div id="quiz">
+        <h3 id="question-num">Question 1</h3>
+        <h3 id="answered-player-num">Players answered: </h3>
+        <h3 id="timer">Timer: <span id="time-left">10</span></h3>
+
+        <div id="result">
+            <div class="square" id="square1" style="background-color: lightcoral"></div>
+            <div class="square" id="square2" style="background-color: lightgreen"></div>
+            <div class="square" id="square3" style="background-color: lightblue"></div>
+            <div class="square" id="square4" style="background-color: lightgoldenrodyellow"></div>
+        </div>
+
+        <div id="question">
+            <div id="question-text"></div>
+            <br>
+            <div id="answer-1"></div>
+            <div id="answer-2"></div>
+            <div id="answer-3"></div>
+            <div id="answer-4"></div>
+        </div>
+
+        <button id="next-question" onclick="nextQuestion()"> next question </button>
+    </div>
+
+    <div id="ranking">
+        <h3 id="first">1. </h3>
+        <h3 id="second">2. </h3>
+        <h3 id="third">3. </h3>
+    </div>
+</body>
+
+<style>
+    #answer-1 {
+        background-color: red;
+        width: 100%;
+    }
+
+    #answer-2 {
+        background-color: greenyellow;
+        width: 100%;
+    }
+
+    #answer-3 {
+        background-color: cyan;
+        width: 100%;
+    }
+
+    #answer-4 {
+        background-color: yellow;
+        width: 100%;
+    }
+
+    .square {
+        border: none;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: none;
+        font-size: 16px;
+        margin: 4px 2px;
+        width: 70px;
+        height: 0px;
+        font-size: 20px;
+    }
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+    integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+    crossorigin="anonymous"></script>
+<script src="{{ url_for('static', filename='hostGame.js') }}"></script>
+
+<script>
+    const socket = io()
+    var timer
+    var remaining_time = 10
+
+    pathname = window.location.pathname.split("/")
+    console.log(pathname[3])
+
+    window.onload = () => {
+        document.getElementById("ranking").style.display = "none"
+    }
+
+    socket.on("connect", () => {
+        console.log("connected to host's game view", socket.id)
+        socket.emit("host-join-game", {
+            'id': pathname[3]
+        })
+    })
+
+    socket.on("no-game-found", () => {
+        console.log("no game found")
+        // window.location.href = "/"
+    })
+
+    socket.on("game-questions", (data) => {
+        gameQuestions(data)
+    })
+
+    socket.on("get-time", (data) => {
+        socket.emit("time-score", {
+            'player': data,
+            'time': remaining_time
+        })
+    })
+
+    socket.on("game-over", (data) => {
+        gameOver(data)
+    })
+
+    socket.on("question-over", (data) => {
+        questionOver(data)
+    })
+
+    socket.on("update-answered-players", (data) => {
+        updateAnsweredPlayers(data)
+    })
+
+</script>

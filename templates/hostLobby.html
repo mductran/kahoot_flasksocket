@@ -1,0 +1,55 @@
+<h2 id="room-title"></h2>
+
+<input type="hidden" id="room-id" value=""/>
+
+<div id="lobby">
+    <div id="players">
+        <h3>Users in room</h3>
+    </div>
+</div>
+
+<button onclick="startGame()">
+    Start game
+</button>
+</div>
+
+<style>
+    #players {
+        border: 1px solid black;
+    }
+</style>
+
+<script src="https://cdn.socket.io/4.5.0/socket.io.min.js"
+    integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k"
+    crossorigin="anonymous"></script>
+
+    <script src="{{ url_for('static', filename='hostLobby.js') }}"></script>
+
+
+<script>
+    const socket = io()
+
+    socket.on("connect", () => {
+        pathname = window.location.pathname.split("/")
+        console.log("host lobby", socket.id)
+        socket.emit("host-join", {
+            "id": pathname[2]
+        })
+    })
+
+    socket.on("show-game-pin", (data) => {
+        console.log('show game pin data', data)
+        roomTitle = document.getElementById("room-title")
+        roomTitle.innerHTML = ""
+        roomTitle.innerHTML = "Room number " + data['pin']
+        document.getElementById("room-id").value = data['pin']
+    })
+
+    socket.on("update-lobby", (data) => {
+        updateLobby(data['players_in_game'])
+    })
+
+    socket.on("game-started", (data) => {
+        window.location.href = "/host/game/" + data
+    })
+</script>

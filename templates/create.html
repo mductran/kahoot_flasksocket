@@ -1,0 +1,61 @@
+<div>
+    <h2>Create game</h2>
+
+    <!-- <form action="/create" method="POST"> -->
+    <form name="question-form">
+        <input type="hidden" id="form-socketid" name="socketid" />
+        <div id="question-div">
+            <div class="question-box" name="question-box-1">
+                <p>Question</p>
+                <input class="question-text" name="q1-question" type="text" placeholder="Enter question text"
+                    autocomplete="off"><br>
+                <input type="text" class="answer_1" name="q1-answer-1" placeholder="Enter answer text">
+                <input type="text" class="answer_2" name="q1-answer-2" placeholder="Enter answer text"><br>
+                <input type="text" class="answer_3" name="q1-answer-3" placeholder="Enter answer text">
+                <input type="text" class="answer_4" name="q1-answer-4" placeholder="Enter answer text"><br>
+                <input class="correct-answer" name="q1-correct" placeholder="correct answer" type="number" min="1"
+                    max="4" required="true"><br>
+                <button id="q-1-delete-btn" onclick="delete_current_question(this.id)">delete question</button><br><br>
+            </div>
+
+        </div>
+
+        <div>
+            <button type="button" onclick="add_question(count_current_question())">Add question</button>
+        </div>
+
+        <input type="submit" name="submit" value="Save questions" />
+    </form>
+
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+    integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+    crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script src="{{ url_for('static', filename='create.js') }}"></script>
+
+<script>
+    const socket = io()
+    socket.on("connect", () => {
+        console.log(socket.id)
+        socketIdField = document.getElementById("form-socketid")
+        socketIdField.value = socket.id
+    })
+    
+    socket.on("start-game-from-host", (data) => {
+        window.location.href = "/host/" + data['id']
+    })
+
+    $("form").on("submit", function (e) {
+        formData = $("form").serializeArray()
+        data = {}
+        for (var i = 0; i < formData.length; i++) {
+            data[formData[i].name] = formData[i].value
+        }
+        socket.emit("new-game", data)
+        e.preventDefault()
+    })
+</script>

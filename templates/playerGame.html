@@ -1,0 +1,153 @@
+<h1>In Game</h1>
+
+<div id="overlay">
+    <h2 style="color: white">Game over. See result on host</h2>
+</div>
+
+<div id="stats">
+    <h3 id="stats-name">Name: </h3>
+    <h3 id="stats-score">Score: </h3>
+    <h3 id="stats-rank">Rank: </h3>
+</div>
+
+<div>
+    <p>
+        Your last answer was:
+    <div id="correct-message"></div>
+    </p>
+</div>
+
+<div id="quiz-question">
+    <div id="question">
+        <p id="questions-text"></p>
+    </div>
+
+    <div id="answers">
+        <ul id="answer-list">
+            <li>
+                <button onclick="playerAnswer(1)" id="answer-1" class="answer-button">Choice 1</button>
+            </li>
+            <li id="answer-2">
+                <button onclick="playerAnswer(2)" id="answer-2" class="answer-button">Choice 2</button>
+            </li>
+            <li id="answer-3">
+                <button onclick="playerAnswer(3)" id="answer-3" class="answer-button">Choice 3</button>
+            </li>
+            <li id="answer-4">
+                <button onclick="playerAnswer(4)" id="answer-4" class="answer-button">Choice 4</button>
+            </li>
+        </ul>
+    </div>
+
+    <div>
+        <p id="answer-submitted-message"></p>
+    </div>
+</div>
+
+<style>
+    #overlay {
+        position: fixed;
+        /* Sit on top of the page content */
+        display: none;
+        /* Hidden by default */
+        width: 100%;
+        /* Full width (cover the whole page) */
+        height: 100%;
+        /* Full height (cover the whole page) */
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 1.0);
+        /* Black background with opacity */
+        z-index: 2;
+        /* Specify a stack order in case you're using a different order for other elements */
+        cursor: pointer;
+        /* Add a pointer on hover */
+    }
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+    integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+    crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script src="{{ url_for('static', filename='playerGame.js') }}"></script>
+
+<script>
+    const socket = io()
+    correct = false
+    answered = false
+
+    function toggleAnswerOptions(value) {
+        buttons = document.getElementsByClassName("answer-button")
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].disabled = value
+        }
+    }
+
+    socket.on("connect", () => {
+        pathname = window.location.pathname.split("/")
+        socket.emit("player-join-game", { "player_socketid": pathname[3] })
+
+        // reset button to be visible on connect just to be safe
+        toggleAnswerOptions(false)
+    })
+
+    socket.on("answer-result", (data) => {
+        correct = data
+    })
+
+    socket.on("question-over", () => {
+        if (correct) {
+            document.getElementById("correct-message").innerHTML = "correct"
+        }
+        else {
+            document.getElementById("correct-message").innerHTML = "not correct :("
+        }
+        document.getElementById("answer-submitted-message").style.visibility = "hidden"
+        toggleAnswerOptions(false)
+        socket.emit("get-score")
+    })
+
+    socket.on("player-game-data", (data) => {
+
+        console.log("player game data: ", data)
+
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].player_socketid == socket.id) {
+                document.getElementById("stats-name").innerHTML = "Name: " + data[i].name
+                document.getElementById("stats-score").innerHTML = "Score: " + data[i].game_data.score
+            }
+        }
+    })
+
+    // socket.on("host-disconnect", () => {
+    //     window.location.href = "/"
+    // })
+
+    socket.on("next-question-player", () => {
+        correct = false
+        answered = false
+
+        buttons = document.getElementsByClassName("answer-button")
+        for (var i = 0; i < buttons.length; i++) {
+            buttons.disabled = false
+        }
+        document.getElementById("answer-submitted-message").innerHTML = ""
+
+    })
+
+    socket.on("update-display-score", (data) => {
+        document.getElementById("stats-score").innerHTML = data
+    })
+
+    socket.on("game-over", (data) => {
+        document.getElementById("overlay").style.display = "block"
+    })
+
+    window.onload = () => {
+        document.getElementById("overlay").style.display = "none"
+    }
+</script>
