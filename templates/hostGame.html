@@ -1,7 +1,7 @@
 <body>
     <div id="quiz">
         <h3 id="question-num">Question 1</h3>
-        <!-- <h3 id="answered-player-num">Players answered: </h3> -->
+        <h3 id="answered-player-num">Players answered: </h3>
         <h3 id="timer">Timer: <span id="time-left">5</span></h3>
 
         <div id="result">
@@ -117,7 +117,7 @@
     })
 
     socket.on("update-answered-players", (data) => {
-        // updateAnsweredPlayers(data)
+        updateAnsweredPlayers(data)
     })
 
 </script>

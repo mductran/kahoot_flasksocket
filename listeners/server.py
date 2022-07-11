@@ -167,7 +167,8 @@ def player_answer(data):
                 # increase score by 100 for correct answer plus time bonus
                 player_collection.update_one({"player_socketid": request.sid}, {
                                              "$inc": {"game_data.score": 100}})
-                socketio.emit("get-time", request.sid, to=room['pin'])
+                # socketio.emit("get-time", request.sid, to=room['pin'])
+                socketio.emit("get-time", request.sid)
                 socketio.emit("answer-result", True)
 
             # if all players answered, set current question to inactive move to next question
@@ -204,7 +205,7 @@ def time_score(data):
     # score = remaining_time as a percentage of total time (remaining_time)
     score = (data['time'] / 10) * 100
     # update score
-    player_collection.update_one({"player_socketid": request.sid}, {
+    player_collection.update_one({"player_socketid": data['player']}, {
         "$inc": {"score": score}})
 
 

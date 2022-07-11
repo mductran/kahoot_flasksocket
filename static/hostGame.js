@@ -30,12 +30,15 @@ function nextQuestion() {
   socket.emit('next-question', {"id": pathname[3]}) //Tell server to start new question
 }
 
-// function updateAnsweredPlayers(data) {
-//   players_in_game = data.players_in_game
-//   answered_players = data.answered_players
+function updateAnsweredPlayers(data) {
 
-//   document.getElementById("answered-player-num").innerHTML = "Players answered: " + answered_players + " / " + players_in_game
-// }
+  console.log("update data", data)
+
+  players_in_game = data.players_in_game
+  answered_players = data.answered_players
+
+  document.getElementById("answered-player-num").innerHTML = "Players answered: " + answered_players + " / " + players_in_game
+}
 
 function gameOver(data) {
   document.getElementById("quiz").style.display = "none"
@@ -43,8 +46,8 @@ function gameOver(data) {
   document.getElementById("ranking").style.display = "block"
 
   document.getElementById("first").innerHTML = "1." + data.first
-  document.getElementById("second").innerHTML = "1." + data.second
-  document.getElementById("third").innerHTML = "1." + data.third
+  document.getElementById("second").innerHTML = "2." + data.second
+  document.getElementById("third").innerHTML = "3." + data.third
 }
 
 function questionOver(data) {
