@@ -29,10 +29,12 @@ def disconnect():
             room = room_collection.find_one(
                 {"pin": int(player['pin'])})
 
-            if not room['live_room']:
+            print("[debug] live room: ", room['live_room'])
+
+            if not (room['live_room'] and room['game_data']['live_question']):
                 player_collection.delete_one({"player_socketid": request.sid})
                 players_in_game = player_collection.find(
-                    {"host_id": player['host_id']}, {"_id": False})
+                    {"pin": room['pin']}, {"_id": False})
 
                 socketio.emit("update-lobby", {
                     "players_in_game": list(players_in_game)
